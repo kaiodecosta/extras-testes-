@@ -28,7 +28,7 @@ def main():
                         print(acao)
             input('Pressione enter para voltar ao menu.')
             
-        elif comando == 2:
+        elif comando == 2:          #adiciona uma ação de acordo com o modelo correto
             limpar_tela()
             while True:
                 print('Caso queira sair sem adicionar uma ação, digite "0".')
@@ -49,6 +49,12 @@ def main():
                         print('Ação não adicionada! Tipagem incorreta.')
                         print('Digite um número maior que 0, tanto para o preço quanto para a quantidade!')
                         print('')
+                        
+                    elif checar_se_correto(adicionar, acoes) == 'tipagem2':
+                        limpar_tela()
+                        print('Ação não adicionada! Tipagem incorreta.')
+                        print('Digite uma ação conforme o modelo mostrado (com um espaço entre as diferentes caractestísticas)!')
+                        print('')
 
                     elif checar_se_correto(adicionar, acoes) == 'correto':
                         acoes.append(adicionar)
@@ -56,20 +62,27 @@ def main():
                         limpar_tela()
                         break
                 
-        elif comando == 3:
+        elif comando == 3:          #remove uma ação selecionada
             if acoes == ['000']:
                 print('Não é possível remover a ação. Não existe nenhuma ação registrada.')
             else:
+                limpar_tela()
+                if acao != '000':
+                    for index in range(1, (len(acoes))):
+                        print(f'{index} - {acoes[index]}')
+                print('Selecione A ação que você deseja remover')
+                remover = obter_numero_faixa('',len(acao), 1)
+                    
                 print('Você realmente deseja remover a ação? Digite "1" para "Sim" e "0" para "Não"')
                 decisao = obter_numero_faixa('', 1, 0)
                 if decisao == 0:
                     limpar_tela()
                 else:
-                    acoes.pop()
+                    acoes.pop(int(remover))
                     print('Ação removida.')
                     input('Pressione enter para voltar ao menu.')
                     
-        elif comando == 4:
+        elif comando == 4:          #mostra a ação mais valiosa
             if acoes == ['000']:
                 print('Não existe nenhuma ação registrada.')
                 input('Pressione enter para voltar ao menu.')
@@ -78,7 +91,7 @@ def main():
                 checar_mais_valiosa(acoes)
                 input('Pressione enter para voltar ao menu.')
                 
-        elif comando == 5:
+        elif comando == 5:          #mosta a ação menos valiosa
             if acoes == ['000']:
                 print('Não existe nenhuma ação registrada.')
                 input('Pressione enter para voltar ao menu.')
@@ -87,7 +100,7 @@ def main():
                 checar_menos_valiosa(acoes)
                 input('Pressione enter para voltar ao menu.')
                 
-        elif comando == 6:
+        elif comando == 6:          #calcula o capital total
             if acoes == ['000']:
                 print('Não existe nenhuma ação registrada.')
                 input('Pressione enter para voltar ao menu.')
@@ -100,11 +113,13 @@ def main():
             print('Você saiu!')
             break
         
-def limpar_tela():
+def limpar_tela():          #limpa a tela
     os.system('cls' if os.name == 'nt' else 'clear')
     
-def checar_se_correto(adicionar, acoes):
-    if int(adicionar[2]) < 1 or int(adicionar[3]) < 1:
+def checar_se_correto(adicionar, acoes):            #checa se a ação está de acordo com o modelo e se tanto o preço quanto a quantidade são positivos diferentes de zero
+    if len(adicionar) != 4:
+        return 'tipagem2'
+    elif float(adicionar[2]) < 1 or int(adicionar[3]) < 1:
             return 'tipagem'
     for acao in acoes:
         if str(acao[0]) == str(adicionar[0]):
@@ -112,55 +127,53 @@ def checar_se_correto(adicionar, acoes):
     else:
         return 'correto'
     
-def checar_mais_valiosa(acoes):
+def checar_mais_valiosa(acoes):         #função para o comando 4
     maior = [1, 1, 1, 1]
     for acao in acoes:
         if acao == '000':
             continue
         else:
-            valor = int(acao[2]) * int(acao[3])
-            valor_maior = int(maior[2]) * int(maior[3])
+            valor = float(acao[2]) * int(acao[3])
+            valor_maior = float(maior[2]) * int(maior[3])
             if valor > valor_maior:
                 maior = acao
-    print(f'A ação da {maior[1]} é a mais valiosa, custando R${int(maior[2]) * int(maior[3])}.')
+    print(f'A ação da {maior[1]} é a mais valiosa, custando R${float(maior[2]) * int(maior[3])}.')
 
-def checar_menos_valiosa(acoes):
+def checar_menos_valiosa(acoes):            #função para o comando 5
     menor = [9, 9, 999999999, 999999]
     for acao in acoes:
         if acao == '000':
             continue
         else:
-            valor = int(acao[2]) * int(acao[3])
-            valor_menor = int(menor[2]) * int(menor[3])
+            valor = float(acao[2]) * int(acao[3])
+            valor_menor = float(menor[2]) * int(menor[3])
             if valor < valor_menor:
                 menor = acao
-    print(f'A ação da {menor[1]} é a menos valiosa, custando R${int(menor[2]) * int(menor[3])}.')
+    print(f'A ação da {menor[1]} é a menos valiosa, custando R${float(menor[2]) * int(menor[3])}.')
     
-def calcular_capital(acoes):
+def calcular_capital(acoes):            #função para o comando 6
     total = 0
     for acao in acoes:
         if acao == '000':
             continue
         else:
-            valor = int(acao[2]) * int(acao[3])
+            valor = float(acao[2]) * int(acao[3])
             total += valor
     print(f'O valor total do capital desta bolsa é de R${total}')
 
-def obter_numero(a:str):
+def obter_numero(a:str):            #função que garante a obtenção de um número, em float
     while True:
         try:
             return float(input(a))
         except:
-            limpar_tela()
             print('Por favor insira um número.')
     
-def obter_numero_faixa(a, maximo, minimo):
+def obter_numero_faixa(a, maximo, minimo):          #garante que o número obtido está dentro de uma faixa selecionada pelo programador
     numero = obter_numero(a)
     while True:
         if minimo <= numero <= maximo:
             return numero
         else:
-            limpar_tela()
             print(f'Por favor insira um número entre {minimo} e {maximo}')
             numero = obter_numero(a)
             
